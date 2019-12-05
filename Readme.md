@@ -8,9 +8,9 @@ It may be possible to extend this for macOS, but this requires the use of a macO
 
 To build for linux
 
-`docker run --rm -v /path/to/riot/:/data riotbuilder:latest linux`
+`docker run --rm -v /path/to/riot/:/data mvgorcum/riotbuilder:latest linux`
 
 To build for windows:
 
-`docker run --rm -v /path/to/riot/:/data riotbuilder:latest windows`
+`docker run --rm -v /path/to/riot/:/data mvgorcum/riotbuilder:latest windows`
 
