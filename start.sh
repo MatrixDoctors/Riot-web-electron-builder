@@ -3,8 +3,18 @@ OPTION="${1}"
 
 case $OPTION in
             "windows")
-    git clone --branch develop https://github.com/vector-im/riot-web.git \
+    git clone --branch develop https://github.com/matrix-org/matrix-js-sdk.git \
+    && cd matrix-js-sdk/ \
+    && yarn install && yarn link \
+    && cd .. \
+    && git clone --branch develop https://github.com/matrix-org/matrix-react-sdk.git \
+    && cd matrix-react-sdk/ \
+    && yarn link matrix-js-sdk \
+    && yarn link && yarn install \
+    && cd .. \
+    && git clone --branch develop https://github.com/vector-im/riot-web.git \
     && cd riot-web/ \
+    && yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && jq 'del(.build.win.sign)' package.json > package.json.new \
     && rm package.json \
     && mv package.json.new package.json \
@@ -16,8 +26,18 @@ case $OPTION in
     && cp -r ./electron_app/dist/ /data
     ;;
             "linux")
-    git clone --branch develop https://github.com/vector-im/riot-web.git \
+    git clone --branch develop https://github.com/matrix-org/matrix-js-sdk.git \
+    && cd matrix-js-sdk/ \
+    && yarn install && yarn link \
+    && cd .. \
+    && git clone --branch develop https://github.com/matrix-org/matrix-react-sdk.git \
+    && cd matrix-react-sdk/ \
+    && yarn link matrix-js-sdk \
+    && yarn link && yarn install \
+    && cd .. \
+    && git clone --branch develop https://github.com/vector-im/riot-web.git \
     && cd riot-web/ \
+    && yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && yarn install \
     && cp config.sample.json config.json \
     && sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json \
