@@ -19,7 +19,6 @@ RUN dpkg --add-architecture i386 \
     && apt-get install -y wine \
     && apt-get install -y mono-devel \
     && apt-get install -y jq \
-    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh \
     && apt-get install -y SQLCipher \
         dpkgArch="$(dpkg --print-architecture)"; \
     case "${dpkgArch##*-}" in \
