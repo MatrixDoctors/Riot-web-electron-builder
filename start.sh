@@ -41,6 +41,12 @@ case $OPTION in
     && yarn install \
     && cp config.sample.json config.json \
     && sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json \
+    && yarn add electron@7.11.1 \
+    && cd electron_app/ \
+    && yarn add matrix-seshat \
+    && yarn add electron-build-env \
+    && yarn run electron-build-env -- --electron 7.11.1 -- neon build matrix-seshat --release \
+    && cd .. \
     && yarn build \
     && yarn build:electron:linux \
     && cp -r ./electron_app/dist/ /data
