@@ -3,21 +3,21 @@ OPTION="${1}"
 
 case $OPTION in
             "windows")
-    git clone --branch develop https://github.com/matrix-org/matrix-js-sdk.git \
+    git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-js-sdk.git \
     && cd matrix-js-sdk/ \
     && yarn install && yarn link \
     && cd .. \
-    && git clone --branch develop https://github.com/matrix-org/matrix-react-sdk.git \
+    && git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-react-sdk.git \
     && cd matrix-react-sdk/ \
     && yarn link matrix-js-sdk \
     && yarn link && yarn install \
     && cd .. \
-    && git clone --branch develop https://github.com/vector-im/riot-web.git \
-    && cd riot-web/ \
-    && yarn link matrix-js-sdk && yarn link matrix-react-sdk \
+    && git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git \
+    && cd riot-web/ ;\
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') ;\
+    yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && jq 'del(.build.win.sign)' package.json > package.json.new \
-    && rm package.json \
-    && mv package.json.new package.json \
+    && rm package.json && mv package.json.new package.json \
     && yarn install \
     && cp config.sample.json config.json \
     && sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json \
@@ -26,26 +26,29 @@ case $OPTION in
     && cp -r ./electron_app/dist/ /data
     ;;
             "linux")
-    git clone --branch develop https://github.com/matrix-org/matrix-js-sdk.git \
+    git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-js-sdk.git \
     && cd matrix-js-sdk/ \
     && yarn install && yarn link \
     && cd .. \
-    && git clone --branch develop https://github.com/matrix-org/matrix-react-sdk.git \
+    && git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-react-sdk.git \
     && cd matrix-react-sdk/ \
     && yarn link matrix-js-sdk \
     && yarn link && yarn install \
     && cd .. \
-    && git clone --branch develop https://github.com/vector-im/riot-web.git \
-    && cd riot-web/ \
-    && yarn link matrix-js-sdk && yarn link matrix-react-sdk \
+    && git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git \
+    && cd riot-web/ ;\
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') ;\
+    yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && yarn install \
     && cp config.sample.json config.json \
     && sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json \
-    && yarn add electron@7.11.1 \
+    && jq '.features += {"feature_event_indexing": "labs"}' config.json > config.json.new \
+    && rm config.json && mv config.json.new config.json \
+    && yarn add --dev electron@$elecversion \
     && cd electron_app/ \
     && yarn add matrix-seshat \
     && yarn add electron-build-env \
-    && yarn run electron-build-env -- --electron 7.11.1 -- neon build matrix-seshat --release \
+    && yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release \
     && cd .. \
     && yarn build \
     && yarn build:electron:linux \

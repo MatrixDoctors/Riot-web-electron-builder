@@ -10,16 +10,14 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH \
     RUST_VERSION=1.41.0
 
-ARG REBUILD=1
-
-COPY start.sh /start.sh
 
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y wine \
     && apt-get install -y mono-devel \
     && apt-get install -y jq \
-    && apt-get install -y SQLCipher \
+    && apt-get install -y sqlcipher libsqlcipher-dev ;\
+    set -eux; \
         dpkgArch="$(dpkg --print-architecture)"; \
     case "${dpkgArch##*-}" in \
         amd64) rustArch='x86_64-unknown-linux-gnu'; rustupSha256='ad1f8b5199b3b9e231472ed7aa08d2e5d1d539198a15c5b1e53c746aad81d27b' ;; \
@@ -40,3 +38,5 @@ RUN dpkg --add-architecture i386 \
     rustc --version;\
     
     rm -rf /var/lib/apt/* /var/cache/apt/*
+
+COPY start.sh /start.sh
