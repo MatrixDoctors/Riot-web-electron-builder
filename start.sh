@@ -41,7 +41,7 @@ case $OPTION in
     jq '.dependencies += {"libsqlcipher0": "^3.2.0"}' package.json > package.json.new && mv package.json.new package.json ;\
     yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && yarn install \
-    && curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
+    && curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json \
     && yarn add --dev electron@$elecversion \
     && cd electron_app/ \
     && yarn add matrix-seshat --ignore-scripts\
