@@ -40,10 +40,7 @@ case $OPTION in
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') ;\
     yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && yarn install \
-    && cp config.sample.json config.json \
-    && sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json \
-    && jq '.features += {"feature_event_indexing": "labs"}' config.json > config.json.new \
-    && rm config.json && mv config.json.new config.json \
+    && curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
     && yarn add --dev electron@$elecversion \
     && cd electron_app/ \
     && yarn add matrix-seshat \
