@@ -13,5 +13,5 @@ steps:
 - script: |
     docker build -t riot .
     mkdir /riot/
-    docker run --rm -v /riot/:/data riot linux
+    docker run --rm -v $(Agent.BuildDirectory)/riot/:/data riot linux
   displayName: 'Build riot'
