@@ -44,7 +44,7 @@ case $OPTION in
     && curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
     && yarn add --dev electron@$elecversion \
     && cd electron_app/ \
-    && yarn add matrix-seshat \
+    && yarn add matrix-seshat --ignore-scripts\
     && yarn add electron-build-env \
     && yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release \
     && cd .. \
