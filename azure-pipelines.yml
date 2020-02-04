@@ -10,10 +10,48 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: |
+# Linux
+- bash: |
     docker build -t riot .
-    mkdir /riot/
     docker run --rm -v $(Build.ArtifactStagingDirectory):/data riot linux
+  condition: eq( variables['Agent.OS'], 'Linux' )
+  displayName: Get IP on Linux
+# macOS
+- bash: |
+    git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-js-sdk.git
+    cd matrix-js-sdk/
+    yarn install && yarn link
+    cd ..
+    git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-react-sdk.git
+    cd matrix-react-sdk/
+    yarn link matrix-js-sdk
+    yarn link && yarn install
+    cd ..
+    git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git
+    cd riot-web/
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g')
+    yarn link matrix-js-sdk
+    yarn link matrix-react-sdk
+    yarn install
+    curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
+    yarn add --dev electron@$elecversion
+    cd electron_app/
+    yarn add matrix-seshat --ignore-script
+    yarn add electron-build-env
+    yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release
+    cd ..
+    yarn build
+    yarn build:electron:mac
+  condition: eq( variables['Agent.OS'], 'Darwin' )
+  displayName: Get IP on macOS
+# Windows
+- powershell: |
+    Set-Variable -Name IPADDR -Value ((Get-NetIPAddress | ?{ $_.AddressFamily -eq "IPv4" -and !($_.IPAddress -match "169") -and !($_.IPaddress -match "127") } | Select-Object -First 1).IPAddress)
+    Write-Host "##vso[task.setvariable variable=IP_ADDR]$IPADDR"
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  displayName: Get IP on Windows
+
+- script: |
   displayName: 'Build riot'
 
 - task: PublishBuildArtifacts@1
