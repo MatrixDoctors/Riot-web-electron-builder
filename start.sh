@@ -38,7 +38,6 @@ case $OPTION in
     && git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git \
     && cd riot-web/ ;\
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') ;\
-    jq '.dependencies += {"libsqlcipher0": "^3.2.0"}' package.json > package.json.new && mv package.json.new package.json ;\
     yarn link matrix-js-sdk && yarn link matrix-react-sdk \
     && yarn install \
     && curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json \
