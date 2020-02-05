@@ -36,14 +36,14 @@ steps:
     cd riot-web/
     cat package.json | jq .version="\"$(git describe)\"" > package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
-    curl https://riot.im/develop/config.json > config.json
-    #curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
+    curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
     yarn install
 
 # Linux
 - bash: |
+    apt-get install -y sqlcipher libsqlcipher-dev
     cd riot-web/ 
-    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
+    elecversion=$(jq -r .build.electronVersion)
     yarn add --dev electron@$elecversion
     cd electron_app/
     yarn add matrix-seshat --ignore-scripts
@@ -59,7 +59,7 @@ steps:
 # Windows
 - bash: |
     cd riot-web/ 
-    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
+    elecversion=$(jq -r .build.electronVersion)
     jq 'del(.build.win.sign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
     cat package.json
@@ -71,8 +71,9 @@ steps:
 
 # mac
 - bash: |
+    brew install sqlcipher
     cd riot-web/ 
-    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
+    elecversion=$(jq -r .build.electronVersion)
     jq 'del(.build.afterSign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
     yarn add --dev electron@$elecversion
