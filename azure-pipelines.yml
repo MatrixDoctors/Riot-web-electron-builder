@@ -35,7 +35,8 @@ steps:
     cd riot-web/
     git checkout develop
     riotversion=$(git describe --dirty --tags)
-    cat package.json | jq .version="\"$riotversion\"" > package.json
+    jq .version="\"$riotversion\"" package.json > package.json.new
+    rm package.json && mv package.json.new package.json
     cat electron_app/package.json | jq .version="\"$riotversion\"" > electron_app/package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
