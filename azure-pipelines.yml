@@ -31,8 +31,10 @@ steps:
     yarn link matrix-js-sdk
     yarn link && yarn install
     cd ..
-    git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git
-    cd riot-web/ 
+    git clone https://github.com/vector-im/riot-web.git
+    git checkout develop
+    cd riot-web/
+    cat package.json | jq .version="\"$(git describe)\"" > package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json
     #curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
