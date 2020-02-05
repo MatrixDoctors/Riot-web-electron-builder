@@ -43,7 +43,7 @@ steps:
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     jq 'del(.build.win.sign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
-    yarn install \
+    yarn install
     cp config.sample.json config.json
     sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json
     yarn build
