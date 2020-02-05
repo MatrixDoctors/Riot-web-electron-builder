@@ -50,6 +50,7 @@ steps:
     cd ..
     yarn build
     yarn build:electron:linux
+    rm -r electron_app/dist/*-unpacked
   condition: eq( variables['Agent.OS'], 'Linux' )
   displayName: Linux Build
 
@@ -61,6 +62,7 @@ steps:
     rm package.json && mv package.json.new package.json
     yarn build
     yarn build:electron:windows
+    rm -r electron_app/dist/*-unpacked
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Windows Build
 
@@ -78,6 +80,7 @@ steps:
     cd ..
     yarn build
     yarn build:electron:macos -c.mac.identity=null --publish never
+    rm -r electron_app/dist/mac
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: macos Build
 
