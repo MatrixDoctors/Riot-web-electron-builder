@@ -63,11 +63,11 @@ steps:
 - bash: |
     cd riot-web/ 
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
-    jq 'del(.build.win.sign)' package.json > package.json.new
+    jq 'del(.build.afterSign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
     yarn install
     yarn build
-    yarn build:electron:macos -c.mac.identity=null -c.mac.type=development
+    yarn build:electron:macos -c.mac.identity=null
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: macos Build
 
