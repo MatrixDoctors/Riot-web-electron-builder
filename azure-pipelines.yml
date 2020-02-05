@@ -67,7 +67,7 @@ steps:
     rm package.json && mv package.json.new package.json
     yarn install
     yarn build
-    yarn build:electron:macos -c.mac.identity=null
+    yarn build:electron:macos -c.mac.identity=null -c.mac.type=development
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: macos Build
 
