@@ -36,12 +36,18 @@ steps:
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json
     #curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
+    yarn install
 
 # Linux
 - bash: |
     cd riot-web/ 
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
-    yarn install
+    yarn add --dev electron@$elecversion
+    cd electron_app/
+    yarn add matrix-seshat --ignore-scripts
+    yarn add electron-build-env
+    yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release
+    cd ..
     yarn build
     yarn build:electron:linux
   condition: eq( variables['Agent.OS'], 'Linux' )
@@ -53,7 +59,6 @@ steps:
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
     jq 'del(.build.win.sign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
-    yarn install
     yarn build
     yarn build:electron:windows
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
@@ -65,7 +70,12 @@ steps:
     elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
     jq 'del(.build.afterSign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
-    yarn install
+    yarn add --dev electron@$elecversion
+    cd electron_app/
+    yarn add matrix-seshat --ignore-scripts
+    yarn add electron-build-env
+    yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release
+    cd ..
     yarn build
     yarn build:electron:macos -c.mac.identity=null --publish never
   condition: eq( variables['Agent.OS'], 'Darwin' )
