@@ -10,8 +10,8 @@ strategy:
   matrix:
     linux:
       imageName: "ubuntu-latest"
-    # mac:
-    #   imageName: "macos-10.14"
+    mac:
+      imageName: "macos-10.14"
     windows:
       imageName: "vs2017-win2016"
 
@@ -19,14 +19,8 @@ pool:
   vmImage: $(imageName)
 
 steps:
-# Linux
-- bash: |
-    docker build -t riot .
-    docker run --rm -v $(Build.ArtifactStagingDirectory):/data riot linux
-  condition: eq( variables['Agent.OS'], 'Linux' )
-  displayName: Linux Build
 
-# Windows
+# Universal
 - bash: |
     git clone --branch develop --depth 1 https://github.com/matrix-org/matrix-js-sdk.git
     cd matrix-js-sdk/
@@ -39,25 +33,45 @@ steps:
     cd ..
     git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git
     cd riot-web/ 
-    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
+    cp config.sample.json config.json
+    sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json
+
+# Linux
+- bash: |
+    cd riot-web/ 
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
+    yarn install
+    yarn build
+    yarn build:electron:linux
+  condition: eq( variables['Agent.OS'], 'Linux' )
+  displayName: Linux Build
+
+# Windows
+- bash: |
+    cd riot-web/ 
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
     jq 'del(.build.win.sign)' package.json > package.json.new
     rm package.json && mv package.json.new package.json
     yarn install
-    cp config.sample.json config.json
-    sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json
     yarn build
     yarn build:electron:windows
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Windows Build
 
+# mac
+- bash: |
+    cd riot-web/ 
+    elecversion=$(cat package.json | jq '.build.electronVersion' | sed 's/"//g') 
+    jq 'del(.build.win.sign)' package.json > package.json.new
+    rm package.json && mv package.json.new package.json
+    yarn install
+    yarn build
+    yarn build:electron:mac
+  condition: eq( variables['Agent.OS'], 'Darwin' )
+  displayName: macos Build
+
 
 - publish: $(System.DefaultWorkingDirectory)/riot-web/electron_app/dist/
-  artifact: Riot_Windows
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
-  displayName: Windows Publish
-
-- publish: $(Build.ArtifactStagingDirectory)/dist/
-  artifact: Riot_Linux
-  condition: eq( variables['Agent.OS'], 'Linux' )
-  displayName: Linux Publish
+  artifact: Riot_$(Agent.OS)
+  displayName: Publish
