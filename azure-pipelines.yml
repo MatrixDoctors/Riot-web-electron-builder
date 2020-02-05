@@ -48,20 +48,16 @@ steps:
     sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json
     yarn build
     yarn build:electron:windows
-    cp -r electron_app/dist/ $(Build.ArtifactStagingDirectory)
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Windows Build
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/dist/'
-    artifactName: Linux_Build
-  condition: eq( variables['Agent.OS'], 'Linux' )
-  displayName: Publish Linux Artifacts
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/'
-    artifactName: Windows_Build
+- publish: $(System.DefaultWorkingDirectory)/riot-web/electron_app/dist/
+  artifact: Riot_Windows
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
-  displayName: Publish Windows Artifacts
+  displayName: Windows Publish
+
+- publish: $(Build.ArtifactStagingDirectory)/dist/
+  artifact: Riot_Linux
+  condition: eq( variables['Agent.OS'], 'Linux' )
+  displayName: Linux Publish
