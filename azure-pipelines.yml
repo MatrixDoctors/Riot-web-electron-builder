@@ -34,7 +34,9 @@ steps:
     git clone https://github.com/vector-im/riot-web.git
     git checkout develop
     cd riot-web/
-    cat package.json | jq .version="\"$(git describe)\"" > package.json
+    riotversion=$(git describe --dirty --tags)
+    cat package.json | jq .version="\"$riotversion\"" > package.json
+    cat electron_app/package.json | jq .version="\"$riotversion\"" > electron_app/package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
     yarn install
