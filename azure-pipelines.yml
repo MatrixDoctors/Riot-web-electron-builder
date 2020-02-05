@@ -34,8 +34,8 @@ steps:
     git clone --branch develop --depth 1 https://github.com/vector-im/riot-web.git
     cd riot-web/ 
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
-    cp config.sample.json config.json
-    sed -i -e 's/"showLabsSettings": false,/"showLabsSettings": true,/g' config.json
+    curl https://riot.im/develop/config.json
+    #curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
 
 # Linux
 - bash: |
@@ -67,7 +67,7 @@ steps:
     rm package.json && mv package.json.new package.json
     yarn install
     yarn build
-    yarn build:electron:mac
+    yarn build:electron:macos
   condition: eq( variables['Agent.OS'], 'Darwin' )
   displayName: macos Build
 
