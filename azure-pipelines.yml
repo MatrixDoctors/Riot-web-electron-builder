@@ -32,8 +32,8 @@ steps:
     yarn link && yarn install
     cd ..
     git clone https://github.com/vector-im/riot-web.git
-    git checkout develop
     cd riot-web/
+    git checkout develop
     riotversion=$(git describe --dirty --tags)
     cat package.json | jq .version="\"$riotversion\"" > package.json
     cat electron_app/package.json | jq .version="\"$riotversion\"" > electron_app/package.json
@@ -43,7 +43,7 @@ steps:
 
 # Linux
 - bash: |
-    apt-get install -y sqlcipher libsqlcipher-dev
+    sudo apt-get install -y sqlcipher libsqlcipher-dev
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion)
     yarn add --dev electron@$elecversion
