@@ -66,7 +66,13 @@ steps:
     elecversion=$(jq -r .build.electronVersion package.json)
     jq 'del(.build.win.sign)' package.json > package.json.new
     mv package.json.new package.json
-    cat package.json
+    yarn add --dev electron@$elecversion
+    cp libsqlcipher* electron_app/
+    cd electron_app/
+    yarn add matrix-seshat --ignore-scripts
+    yarn add electron-build-env
+    yarn run electron-build-env -- --electron $elecversion -- neon build matrix-seshat --release
+    cd ..
     yarn build
     yarn build:electron:windows
     rm -r electron_app/dist/*-unpacked
