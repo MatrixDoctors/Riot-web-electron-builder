@@ -44,7 +44,7 @@ steps:
 
 # Linux
 - bash: |
-    sudo apt-get install -y sqlcipher libsqlcipher-dev
+    #sudo apt-get install -y sqlcipher libsqlcipher-dev
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion)
     yarn add --dev electron@$elecversion
@@ -74,7 +74,7 @@ steps:
 
 # mac
 - bash: |
-    brew install sqlcipher
+    #brew install sqlcipher
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion)
     jq 'del(.build.afterSign)' package.json > package.json.new
