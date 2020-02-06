@@ -36,7 +36,7 @@ steps:
     git checkout develop
     riotversion=$(git describe --dirty --tags)
     jq .version="\"$riotversion\"" package.json > package.json.new
-    rm package.json && mv package.json.new package.json
+    mv package.json.new package.json
     cat electron_app/package.json | jq .version="\"$riotversion\"" > electron_app/package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
@@ -64,7 +64,7 @@ steps:
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion)
     jq 'del(.build.win.sign)' package.json > package.json.new
-    rm package.json && mv package.json.new package.json
+    mv package.json.new package.json
     cat package.json
     yarn build
     yarn build:electron:windows
@@ -78,7 +78,7 @@ steps:
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion)
     jq 'del(.build.afterSign)' package.json > package.json.new
-    rm package.json && mv package.json.new package.json
+    mv package.json.new package.json
     yarn add --dev electron@$elecversion
     cd electron_app/
     yarn add matrix-seshat --ignore-scripts
