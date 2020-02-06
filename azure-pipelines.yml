@@ -62,6 +62,7 @@ steps:
 
 # Windows
 - bash: |
+    cp libsqlcipher* riot-web/
     cd riot-web/ 
     elecversion=$(jq -r .build.electronVersion package.json)
     jq 'del(.build.win.sign)' package.json > package.json.new
