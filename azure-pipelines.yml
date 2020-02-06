@@ -38,6 +38,7 @@ steps:
     jq .version="\"$riotversion\"" package.json > package.json.new
     mv package.json.new package.json
     cat electron_app/package.json | jq .version="\"$riotversion\"" > electron_app/package.json
+    cat electron_app/package.json
     yarn link matrix-js-sdk && yarn link matrix-react-sdk
     curl https://riot.im/develop/config.json | jq '.features += {"feature_event_indexing": "labs"}' > config.json
     yarn install
@@ -79,6 +80,7 @@ steps:
     elecversion=$(jq -r .build.electronVersion package.json)
     jq 'del(.build.afterSign)' package.json > package.json.new
     mv package.json.new package.json
+    cat package.json
     yarn add --dev electron@$elecversion
     cd electron_app/
     yarn add matrix-seshat --ignore-scripts
